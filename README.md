@@ -1,5 +1,7 @@
 # intothesun
 
+Don't drive into the sun
+
 ## Project setup
 ```
 npm install

@@ -1,6 +1,6 @@
 {
-  "name": "intothesun",
-  "short_name": "intothesun",
+  "name": "Don't drive into the sun",
+  "short_name": "toobright",
   "icons": [
     {
       "src": "./img/icons/android-chrome-192x192.png",
