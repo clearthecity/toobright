@@ -1,13 +1,43 @@
 <template>
-  <div class="about"><b-container>
+  <div class="about">
+  <b-container>
     <ImagePanel :photo_id='1'></ImagePanel>
 
     <div class='row'><div class='col'>
-      <p>I like making apps, and I don&rsquo;t like driving into the sun.</p>
+      <p>i wanted to make a lower-case app about avoiding doom</p>
+      <p>this program was written in <a href='https://vuejs.org/'>VueJS</a> & uses Vladimir Agafonkin&rsquo;s <a href='https://github.com/mourner/suncalc'>suncalc</a> library</p>
+      <p>i don&rsquo;t collect your location or any other data</p>
     </div></div>
 
-  </b-container></div>
+    <footer>
+      <div class='row'>
+        <div class='col-3' id='social-icons'>
+          <a href='https://twitter.com/clearthecity'><img src='@/assets/images/Twitter_bird_logo.svg' alt='Twitter' style='height:1rem'></a>
+        </div>
+        <div class='col' style='text-align: right'>
+          &copy; 2019 nice derangements, inc.
+        </div>
+      </div>
+    </footer>
+
+  </b-container>
+
+
+
+  </div>
 </template>
+
+<style scoped>
+
+footer {
+  position: relative;
+  margin-top: 1rem;
+  bottom: 0.5rem;
+  width: 100%;
+  font-size: 0.8rem;
+}
+
+</style>
 
 <script>
 export default {

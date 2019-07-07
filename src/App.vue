@@ -1,11 +1,19 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
+  <div id="app"><b-container fluid>
+    <div id='nav-menu-area'>
+      <a v-b-toggle.nav-collapse id='nav-menu-toggle'>
+        <MenuIcon class="when-closed" role='navigation' :size='36' />
+        <CloseIcon class="when-opened" role='navigation' :size='28' />
+      </a>
+      <b-collapse id="nav-collapse">
+        <b-nav vertical id='nav'>
+          <b-nav-item><router-link to="/">home</router-link></b-nav-item>
+          <b-nav-item><router-link to="/about">about</router-link></b-nav-item>
+        </b-nav>
+      </b-collapse>
     </div>
     <router-view/>
-  </div>
+  </b-container></div>
 </template>
 
 <style>
@@ -14,26 +22,48 @@
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
 }
 
-#nav {
-  padding: 30px;
-}
-
 #nav a {
-  font-weight: bold;
+  font-weight: 500;
   color: #2c3e50;
 }
 
 #nav a.router-link-exact-active {
   color: #42b983;
 }
+
+.nav-link {
+  padding-left: 0;
+}
+
+.collapsed > .when-opened, :not(.collapsed) > .when-closed {
+  display: none;
+}
+
+a .material-design-icon {
+  cursor: pointer;
+}
+
 </style>
 
 <script>
-  export default {
-    name: 'App'
+
+import MenuIcon from 'vue-material-design-icons/Menu.vue'
+
+export default {
+  name: 'App',
+  components: {
+    MenuIcon,
+    CloseIcon: () => import('vue-material-design-icons/Close.vue')
+  },
+  data () {
+    return {
+      appStyle: {
+        backgroundColor: 'lightgrey'
+      }
+    }
   }
+}
 </script>
