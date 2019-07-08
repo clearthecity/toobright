@@ -34,6 +34,10 @@
   color: #42b983;
 }
 
+#nav a:hover {
+  text-decoration-style: dotted;
+}
+
 .nav-link {
   padding-left: 0;
 }

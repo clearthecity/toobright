@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
 
 importScripts(
-  "/precache-manifest.2080cf1f0f5b7d48f644d7e4f21c0579.js"
+  "/precache-manifest.efea7d5a514030624ef84f0bb3f8ece5.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "intothesun"});

@@ -1,27 +1,32 @@
 <template>
   <div id="home"><b-container>
 
-  <div class='row'>
+  <transition name='fade'>
+  <div class='row' v-if='showButton'>
     <b-button pill variant='outline-danger' v-on:click='runProgram' id='start-btn'>don&rsquo;t drive into the sun</b-button>
   </div>
+  </transition>
 
-  <div class='row' id='user-location-row'><div class='col'>
+  <div id='output'>
     <p>
-      <span id='coord-msg'>{{ coordinateMessageStart }}</span>
-      <span id='latitude'> {{ userLatitudeString }}</span>
-      <span id='longitude'>{{ userLongitudeString }}</span>
+      <span>{{ userCoordinateString }}</span>
     </p>
 
     <p>
       <span id='altitude'> {{ altitudeString }} </span>
     </p>
-  </div></div>
 
-<!--
-  <div class='row'>
-    <b-button pill variant='info' v-on:click='getSunPosition' style='margin:auto'>Find the Sun</b-button>
+    <div v-if='showResults'>
+      <div ref='results' id='results'>
+        <SafeToDrive
+          :sunAltitude='sunAltitude'
+          :sunAzimuth='sunAzimuth'
+          :userLatitude='userLatitude'
+          :userLongitude='userLongitude'
+        ></SafeToDrive>
+      </div>
+    </div>
   </div>
--->
 
   </b-container></div>
 </template>
@@ -32,7 +37,6 @@
   /*display: table;*/
   position: fixed;
   height: 100%;
-  text-align: center;
 }
 
 #start-btn {
@@ -44,16 +48,22 @@
   margin-left: 60px;
 }
 
-#user-location-row {
+#output {
   position: fixed;
+  width: 100%;
   top: 25%;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to {
+  opacity: 0;
 }
 
 </style>
 
 <script>
-// @ is an alias to /src
-// import HelloWorld from '@/components/HelloWorld.vue'
 
 /*
     altitude: sun altitude above the horizon in radians, e.g. 0 at the horizon and PI/2 at the zenith (straight over your head)
@@ -72,38 +82,29 @@
 
 */
 
+
+
 export default {
   name: 'home',
   components: {
+    SafeToDrive: () => import('@/components/SafeToDrive.vue')
   },
   data () {
     return {
+      showButton: true,
+      showResults: false,
       userLatitude: null,
       userLongitude: null,
       sunAltitude: null,
-      sunAzimuth: null,
-      timeSunrise: null,
-      timeMorningDangerEnd: null,
-      timeEveningDangerBegin: null,
-      timeSunset: null
+      sunAzimuth: null
     }
   },
   computed: {
-    userLatitudeString: function () {
-      if (this.userLatitude) {
-        return this.userLatitude.toFixed(2) + String.fromCharCode('176') + ', '
-      }
-      return ''
-    },
-    userLongitudeString: function () {
-      if (this.userLongitude) {
-        return this.userLongitude.toFixed(2) + String.fromCharCode('176')
-      }
-      return ''
-    },
-    coordinateMessageStart: function () {
-      if (this.userLatitude) {
-        return 'you are here:'
+    userCoordinateString: function() {
+      if (this.userLatitude && this.userLongitude) {
+        let str = 'you are here: (' + this.userLatitude.toFixed(2) + String.fromCharCode('176')
+        str += ', ' + this.userLongitude.toFixed(2) + String.fromCharCode('176') + ')'
+        return str
       }
       return ''
     },
@@ -119,26 +120,25 @@ export default {
 
         const vm = this
 
-        // fade button
-
-        this.getGPSCoordinates()
+        vm.getGPSCoordinates()
         .then(function(coords) {
+          vm.showButton = false
           vm.updateUserCoords(coords)
           return coords
         }, function(error) {
+          // show modal asking for permission
           alert("getGPSCoordinates: " + error)
         })
+
         .then(function(coords) {
-          vm.getAltitude(coords.latitude, coords.longitude)
-          .then(function(altitude) {
-            // alert("altitude: " + altitude)
-            vm.updateAltitude(altitude)
-            return altitude
+          vm.getSunPosition(coords.latitude, coords.longitude)
+          .then(function(position) {
+            vm.updateSunPosition(position)
+            vm.showResults = true
           }, function(error) {
             console.log(error)
           })
         })
-
 
     },
 
@@ -172,12 +172,29 @@ export default {
       })
     },
 
+    getSunPosition: function (userLatitude, userLongitude) {
+      return new Promise((resolve, reject) => {
+        if (!userLatitude || !userLongitude) {
+          reject(Error("Can't read coordinates"))
+        }
+        const SunCalc = this.$suncalc
+        let now = new Date()
+        let sunPosition = SunCalc.getPosition(now, userLatitude, userLongitude)
+        if (!sunPosition) {
+          reject(Error("Can't get sun position"))
+        }
+        resolve(sunPosition)
+      })
+    },
+
     updateUserCoords: function (coords) {
       this.userLatitude = coords.latitude
       this.userLongitude = coords.longitude
     },
-    updateAltitude: function (altitude) {
-      this.sunAltitude = altitude
+
+    updateSunPosition: function (position) {
+      this.sunAltitude = position.altitude * 180 / Math.PI
+      this.sunAzimuth = position.azimuth * 180 / Math.PI
     }
   }
 }
