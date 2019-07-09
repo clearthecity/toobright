@@ -7,6 +7,7 @@
       <p>i wanted to make a lower-case app about saving ourselves from doom</p>
       <p>this program was written in <a href='https://vuejs.org/'>VueJS</a> & uses Vladimir Agafonkin&rsquo;s <a href='https://github.com/mourner/suncalc'>suncalc</a> library </p>
       <p>i don&rsquo;t collect your location or any other data</p>
+      <p>enjoy</p>
     </div></div>
 
     <footer>
@@ -21,9 +22,6 @@
     </footer>
 
   </b-container>
-
-
-
   </div>
 </template>
 

@@ -1,22 +1,28 @@
 <template>
   <div id="home"><b-container>
 
-  <transition name='fade'>
-  <div class='row' v-if='showButton'>
+  <transition name='fade05'>
+  <div class='row home-text' id='start-btn-row' v-if='step == 1'><div class='col'>
     <b-button pill variant='outline-danger' v-on:click='runProgram' id='start-btn'>don&rsquo;t drive into the sun</b-button>
-  </div>
+  </div></div>
   </transition>
 
-  <div id='output'>
-    <p>
+  <div class='home-text' id='output'>
+
+  <transition name='fade05'>
+    <p v-if='step >= 2'>
       <span>{{ userCoordinateString }}</span>
     </p>
+  </transition>
 
-    <p>
+  <transition name='fade1'>
+    <p v-if='step >= 3'>
       <span id='altitude'> {{ altitudeString }} </span>
     </p>
+  </transition>
 
-    <div v-if='showResults'>
+  <transition name='fade2'>
+    <div v-if='step >= 3'>
       <div ref='results' id='results'>
         <SafeToDrive
           :sunAltitude='sunAltitude'
@@ -26,6 +32,8 @@
         ></SafeToDrive>
       </div>
     </div>
+  </transition>
+
   </div>
 
   </b-container></div>
@@ -34,30 +42,34 @@
 <style scoped>
 
 #home > div.container {
-  /*display: table;*/
   position: fixed;
   height: 100%;
 }
 
-#start-btn {
+.home-text {
   position: fixed;
+  width: 100%;
+}
+
+#start-btn-row {
   top: 35%;
-  /*display: table-cell;
-  vertical-align: middle;*/
-  width: 200px;
-  margin-left: 60px;
+  text-align: center;
 }
 
 #output {
-  position: fixed;
-  width: 100%;
   top: 25%;
 }
 
-.fade-enter-active, .fade-leave-active {
+.fade05-enter-active, .fade05-leave-active {
   transition: opacity .5s;
 }
-.fade-enter, .fade-leave-to {
+.fade1-enter-active, .fade1-leave-active {
+  transition: opacity 2s;
+}
+.fade2-enter-active, .fade2-leave-active {
+  transition: opacity 4s;
+}
+.fade05-enter, .fade05-leave-to, .fade1-enter, .fade1-leave-to, .fade2-enter, .fade2-leave-to {
   opacity: 0;
 }
 
@@ -65,24 +77,11 @@
 
 <script>
 
-/*
-    altitude: sun altitude above the horizon in radians, e.g. 0 at the horizon and PI/2 at the zenith (straight over your head)
-    "An elevation angle of 10 degrees [PI/18] is usually enough to allow you to block it with a sunvisor"; close to 0 is most dangerous (Quora)
-
-    azimuth: horizontal angle in radians (direction along the horizon, measured from south to west), e.g. 0 is south and Math.PI * 3/4 is northwest
-    Due west = 90deg
-    Due east = 270deg
-
-    Radians to degrees = radian_val * 180 / Math.PI;
-
-    http://astronomy.beamappzone.com/ : animated demo
-
-    To add custom time to SunCalc.getTimes results:
-    SunCalc.addTime(angleInDegrees, morningName, eveningName)
-
-*/
-
-
+const STEP_WAITING = 1
+const STEP_COORDS = 2
+const STEP_RESULTS = 3
+// eslint-disable-next-line
+const STEP_NO_COORDS = 0
 
 export default {
   name: 'home',
@@ -91,8 +90,7 @@ export default {
   },
   data () {
     return {
-      showButton: true,
-      showResults: false,
+      step: STEP_WAITING,
       userLatitude: null,
       userLongitude: null,
       sunAltitude: null,
@@ -100,7 +98,7 @@ export default {
     }
   },
   computed: {
-    userCoordinateString: function() {
+    userCoordinateString: function () {
       if (this.userLatitude && this.userLongitude) {
         let str = 'you are here: (' + this.userLatitude.toFixed(2) + String.fromCharCode('176')
         str += ', ' + this.userLongitude.toFixed(2) + String.fromCharCode('176') + ')'
@@ -112,34 +110,33 @@ export default {
       if (this.sunAltitude) {
         return 'altitude of the sun: ' + this.sunAltitude.toFixed(2) + String.fromCharCode('176')
       }
+      return ''
     }
   },
   methods: {
 
-    runProgram: function() {
-
+    runProgram: function () {
         const vm = this
 
         vm.getGPSCoordinates()
-        .then(function(coords) {
-          vm.showButton = false
+        .then(function (coords) {
           vm.updateUserCoords(coords)
+          vm.step = STEP_COORDS
           return coords
-        }, function(error) {
+        }, function (error) {
           // show modal asking for permission
-          alert("getGPSCoordinates: " + error)
+          alert('getGPSCoordinates: ' + error)
         })
 
-        .then(function(coords) {
+        .then(function (coords) {
           vm.getSunPosition(coords.latitude, coords.longitude)
-          .then(function(position) {
+          .then(function (position) {
             vm.updateSunPosition(position)
-            vm.showResults = true
-          }, function(error) {
+            vm.step = STEP_RESULTS
+          }, function (error) {
             console.log(error)
           })
         })
-
     },
 
     getGPSCoordinates: function () {
@@ -151,7 +148,7 @@ export default {
           })
         }
         else {
-          reject(Error("Can't access location"))
+          reject(Error('No navigator'))
         }
       })
     },
@@ -159,13 +156,13 @@ export default {
     getAltitude: function (userLatitude, userLongitude) {
       return new Promise((resolve, reject) => {
         if (!userLatitude || !userLongitude) {
-          reject(Error("Can't read coordinates"))
+          reject(Error('Cannot read coordinates'))
         }
         const SunCalc = this.$suncalc
         let now = new Date()
         let sunPosition = SunCalc.getPosition(now, userLatitude, userLongitude)
         if (!sunPosition) {
-          reject(Error("getAltitude: Can't get sun position"))
+          reject(Error('getAltitude: Cannot get sun position'))
         }
         let sunAltitude = sunPosition.altitude * 180 / Math.PI
         resolve(sunAltitude)
@@ -175,13 +172,13 @@ export default {
     getSunPosition: function (userLatitude, userLongitude) {
       return new Promise((resolve, reject) => {
         if (!userLatitude || !userLongitude) {
-          reject(Error("Can't read coordinates"))
+          reject(Error('Cannot read coordinates'))
         }
         const SunCalc = this.$suncalc
         let now = new Date()
         let sunPosition = SunCalc.getPosition(now, userLatitude, userLongitude)
         if (!sunPosition) {
-          reject(Error("Can't get sun position"))
+          reject(Error('Cannot get sun position'))
         }
         resolve(sunPosition)
       })

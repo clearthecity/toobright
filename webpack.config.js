@@ -1,4 +1,5 @@
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
+const MomentLocalesPlugin = require('moment-locales-webpack-plugin')
 
 module.exports = {
   module: {
@@ -11,6 +12,9 @@ module.exports = {
     ]
   },
   plugins: [
-    new VueLoaderPlugin()
+    new VueLoaderPlugin(),
+    new MomentLocalesPlugin({
+      localesToKeep: ['en-us']
+    })
   ]
 }

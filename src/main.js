@@ -13,6 +13,9 @@ Vue.use(BootstrapVue)
 const SunCalc = require('suncalc')
 Object.defineProperty(Vue.prototype, '$suncalc', { value: SunCalc })
 
+const moment = require('moment')
+Object.defineProperty(Vue.prototype, '$moment', { value: moment })
+
 Vue.config.productionTip = false
 
 new Vue({
