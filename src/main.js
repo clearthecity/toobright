@@ -8,8 +8,6 @@ import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 Vue.use(BootstrapVue)
 
-// import 'vue-material-design-icons/styles.css' //optional
-
 const SunCalc = require('suncalc')
 Object.defineProperty(Vue.prototype, '$suncalc', { value: SunCalc })
 

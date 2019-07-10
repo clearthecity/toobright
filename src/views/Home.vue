@@ -1,6 +1,10 @@
 <template>
   <div id="home"><b-container>
 
+  <div class='row home-text' id='no-coords-row' v-if='step == 0'>
+    <NoCoordinates v-bind:insecure='insecure'></NoCoordinates>
+  </div>
+
   <transition name='fade05'>
   <div class='row home-text' id='start-btn-row' v-if='step == 1'><div class='col'>
     <b-button pill variant='outline-danger' v-on:click='runProgram' id='start-btn'>don&rsquo;t drive into the sun</b-button>
@@ -12,25 +16,28 @@
   <transition name='fade05'>
     <p v-if='step >= 2'>
       <span>{{ userCoordinateString }}</span>
+      &nbsp;
+      <a v-bind:href="mapHref" class='link-underline' target='blank'>
+          <img src='@/assets/images/new_window.svg' alt='' style='height:1rem' />
+          map
+      </a>
     </p>
   </transition>
 
-  <transition name='fade1'>
+  <transition name='fade05'>
     <p v-if='step >= 3'>
       <span id='altitude'> {{ altitudeString }} </span>
     </p>
   </transition>
 
-  <transition name='fade2'>
-    <div v-if='step >= 3'>
-      <div ref='results' id='results'>
+  <transition name='fade05'>
+    <div v-if='step >= 4'>
         <SafeToDrive
           :sunAltitude='sunAltitude'
           :sunAzimuth='sunAzimuth'
           :userLatitude='userLatitude'
           :userLongitude='userLongitude'
         ></SafeToDrive>
-      </div>
     </div>
   </transition>
 
@@ -51,7 +58,7 @@
   width: 100%;
 }
 
-#start-btn-row {
+#start-btn-row, #no-coords-row {
   top: 35%;
   text-align: center;
 }
@@ -63,13 +70,7 @@
 .fade05-enter-active, .fade05-leave-active {
   transition: opacity .5s;
 }
-.fade1-enter-active, .fade1-leave-active {
-  transition: opacity 2s;
-}
-.fade2-enter-active, .fade2-leave-active {
-  transition: opacity 4s;
-}
-.fade05-enter, .fade05-leave-to, .fade1-enter, .fade1-leave-to, .fade2-enter, .fade2-leave-to {
+.fade05-enter, .fade05-leave-to {
   opacity: 0;
 }
 
@@ -79,18 +80,27 @@
 
 const STEP_WAITING = 1
 const STEP_COORDS = 2
-const STEP_RESULTS = 3
-// eslint-disable-next-line
+const STEP_ALTITUDE = 3
+const STEP_RESULTS = 4
 const STEP_NO_COORDS = 0
+
+const isLocalHost = () => {
+  return (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+}
+const isInsecure = () => {
+  return (location.protocol && location.protocol !== 'https')
+}
 
 export default {
   name: 'home',
   components: {
-    SafeToDrive: () => import('@/components/SafeToDrive.vue')
+    SafeToDrive: () => import('@/components/SafeToDrive.vue'),
+    NoCoordinates: () => import('@/components/NoCoordinates.vue')
   },
   data () {
     return {
       step: STEP_WAITING,
+      insecure: false,
       userLatitude: null,
       userLongitude: null,
       sunAltitude: null,
@@ -106,6 +116,12 @@ export default {
       }
       return ''
     },
+    mapHref: function () {
+      if (this.userLatitude && this.userLongitude) {
+        return 'https://www.openstreetmap.org/#map=14/' + this.userLatitude + '/' + this.userLongitude
+      }
+      return ''
+    },
     altitudeString: function () {
       if (this.sunAltitude) {
         return 'altitude of the sun: ' + this.sunAltitude.toFixed(2) + String.fromCharCode('176')
@@ -114,73 +130,91 @@ export default {
     }
   },
   methods: {
-
     runProgram: function () {
-        const vm = this
+      if (!isLocalHost() && (isInsecure() || !navigator.geolocation)) {
+        if (isInsecure()) {
+          this.insecure = true
+        }
+        this.step = STEP_NO_COORDS
+        return
+      }
 
-        vm.getGPSCoordinates()
-        .then(function (coords) {
-          vm.updateUserCoords(coords)
-          vm.step = STEP_COORDS
-          return coords
-        }, function (error) {
-          // show modal asking for permission
-          alert('getGPSCoordinates: ' + error)
-        })
+      const vm = this
 
-        .then(function (coords) {
-          vm.getSunPosition(coords.latitude, coords.longitude)
-          .then(function (position) {
-            vm.updateSunPosition(position)
+      vm.getGPSCoordinates()
+      .then(function (coords) {
+        vm.updateUserCoords(coords)
+        vm.step = STEP_COORDS
+        return coords
+      }, function (error) {
+        vm.step = STEP_NO_COORDS
+        console.log(error)
+      })
+
+      .then(function (coords) {
+        vm.getSunPosition(coords.latitude, coords.longitude)
+        .then(function (position) {
+          vm.updateSunPosition(position)
+          setTimeout(() => {
+            vm.step = STEP_ALTITUDE
+          }, 1000)
+          setTimeout(() => {
             vm.step = STEP_RESULTS
-          }, function (error) {
-            console.log(error)
-          })
+          }, 1000)
+        }, function (error) {
+          console.log(error)
         })
+      })
     },
 
     getGPSCoordinates: function () {
       return new Promise((resolve, reject) => {
-        if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition((position) => {
-            let userCoords = position.coords
-            resolve(userCoords)
-          })
-        }
-        else {
-          reject(Error('No navigator'))
-        }
+        setTimeout(() => {
+          if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((position) => {
+              let userCoords = position.coords
+              resolve(userCoords)
+            })
+          }
+          else {
+            reject(Error('No navigator'))
+          }
+        }, 1000)
       })
     },
 
     getAltitude: function (userLatitude, userLongitude) {
       return new Promise((resolve, reject) => {
-        if (!userLatitude || !userLongitude) {
-          reject(Error('Cannot read coordinates'))
-        }
-        const SunCalc = this.$suncalc
-        let now = new Date()
-        let sunPosition = SunCalc.getPosition(now, userLatitude, userLongitude)
-        if (!sunPosition) {
-          reject(Error('getAltitude: Cannot get sun position'))
-        }
-        let sunAltitude = sunPosition.altitude * 180 / Math.PI
-        resolve(sunAltitude)
+        setTimeout(() => {
+          if (!userLatitude || !userLongitude) {
+            reject(Error('Cannot read coordinates'))
+          }
+          var SunCalc = this.$suncalc
+          let now = new Date()
+          let sunPosition = SunCalc.getPosition(now, userLatitude, userLongitude)
+          if (!sunPosition) {
+            reject(Error('getAltitude: Cannot get sun position'))
+          }
+          let sunAltitude = sunPosition.altitude * 180 / Math.PI
+          resolve(sunAltitude)
+        }, 1000)
       })
     },
 
     getSunPosition: function (userLatitude, userLongitude) {
       return new Promise((resolve, reject) => {
-        if (!userLatitude || !userLongitude) {
-          reject(Error('Cannot read coordinates'))
-        }
-        const SunCalc = this.$suncalc
-        let now = new Date()
-        let sunPosition = SunCalc.getPosition(now, userLatitude, userLongitude)
-        if (!sunPosition) {
-          reject(Error('Cannot get sun position'))
-        }
-        resolve(sunPosition)
+        setTimeout(() => {
+          if (!userLatitude || !userLongitude) {
+            reject(Error('Cannot read coordinates'))
+          }
+          var SunCalc = this.$suncalc
+          let now = new Date()
+          let sunPosition = SunCalc.getPosition(now, userLatitude, userLongitude)
+          if (!sunPosition) {
+            reject(Error('Cannot get sun position'))
+          }
+          resolve(sunPosition)
+        }, 1000)
       })
     },
 

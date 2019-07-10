@@ -1,6 +1,6 @@
-# intothesun
+# toobright
 
-Don't drive into the sun
+Minimalist GPS app using Vue, [suncalc](https://github.com/mourner/suncalc), and [moment](https://momentjs.com/)
 
 ## Project setup
 ```
