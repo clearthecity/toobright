@@ -88,7 +88,7 @@ const isLocalHost = () => {
   return (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
 }
 const isInsecure = () => {
-  return (location.protocol && location.protocol !== 'https:')
+  return (location.protocol !== "https" && location.protocol !== 'https:')
 }
 
 export default {
