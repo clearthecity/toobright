@@ -14,10 +14,10 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
 
 importScripts(
-  "/precache-manifest.a131674d247d230f6dae6d206cca8fd2.js"
+  "/precache-manifest.567b94aad9df11134ff38813e1302618.js"
 );
 
-workbox.core.setCacheNameDetails({prefix: "intothesun"});
+workbox.core.setCacheNameDetails({prefix: "toobright"});
 
 /**
  * The workboxSW.precacheAndRoute() method efficiently caches and responds to

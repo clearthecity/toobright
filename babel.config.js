@@ -1,4 +1,4 @@
 module.exports = {
   'presets': [],
-  'plugins': ["@babel/plugin-syntax-dynamic-import"]
+  'plugins': ['@babel/plugin-syntax-dynamic-import']
 }
