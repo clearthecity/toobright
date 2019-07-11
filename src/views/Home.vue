@@ -18,7 +18,7 @@
       <span>{{ userCoordinateString }}</span>
       &nbsp;
       <a v-bind:href="mapHref" class='link-underline' target='blank'>
-          <img src='@/assets/images/new_window.svg' alt='' style='height:1rem' />
+          <img src='@/assets/images/new_window.svg' alt='' style='height:0.9rem' />
           map
       </a>
     </p>

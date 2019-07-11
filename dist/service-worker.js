@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
 
 importScripts(
-  "/precache-manifest.567b94aad9df11134ff38813e1302618.js"
+  "/precache-manifest.f062c314f9f3d6f53d2b054bfba94514.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "toobright"});
