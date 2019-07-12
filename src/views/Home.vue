@@ -2,7 +2,7 @@
   <div id="home"><b-container>
 
   <div class='row home-text' id='no-coords-row' v-if='step == 0'>
-    <NoCoordinates v-bind:insecure='insecure'></NoCoordinates>
+    <NoCoordinates :insecure='insecure'></NoCoordinates>
   </div>
 
   <transition name='fade05'>
@@ -88,7 +88,7 @@ const isLocalHost = () => {
   return (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
 }
 const isInsecure = () => {
-  return (location.protocol !== "https" && location.protocol !== 'https:')
+  return (location.protocol !== 'https' && location.protocol !== 'https:')
 }
 
 export default {
@@ -131,10 +131,8 @@ export default {
   },
   methods: {
     runProgram: function () {
-      if (!isLocalHost() && (isInsecure() || !navigator.geolocation)) {
-        if (isInsecure()) {
-          this.insecure = true
-        }
+      if (!isLocalHost() && isInsecure()) {
+        this.insecure = true
         this.step = STEP_NO_COORDS
         return
       }
@@ -148,7 +146,7 @@ export default {
         return coords
       }, function (error) {
         vm.step = STEP_NO_COORDS
-        console.log(error)
+        // console.log(error)
       })
 
       .then(function (coords) {
@@ -160,7 +158,7 @@ export default {
           }, 1000)
           setTimeout(() => {
             vm.step = STEP_RESULTS
-          }, 1000)
+          }, 1500)
         }, function (error) {
           console.log(error)
         })
@@ -169,17 +167,30 @@ export default {
 
     getGPSCoordinates: function () {
       return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition((position) => {
-              let userCoords = position.coords
-              resolve(userCoords)
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function (position) {
+            let userCoords = position.coords
+            resolve(userCoords)
+          }, function (error) {
+              switch (error.code) {
+                case error.PERMISSION_DENIED:
+                  reject(Error('Permission denied'))
+                  break
+                case error.PERMISSION_UNAVAILABLE:
+                  reject(Error('Permission unavailable'))
+                  break
+                case error.TIMEOUT:
+                  reject(Error('Timeout'))
+                  break
+                default:
+                  reject(Error('Unknown geolocation error'))
+                  break
+              }
             })
           }
           else {
             reject(Error('No navigator'))
           }
-        }, 1000)
       })
     },
 
