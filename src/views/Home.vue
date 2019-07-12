@@ -143,25 +143,25 @@ export default {
       .then(function (coords) {
         vm.updateUserCoords(coords)
         vm.step = STEP_COORDS
-        return coords
+        // return coords
+        // .then(function (coords) {
+          vm.getSunPosition(coords.latitude, coords.longitude)
+          .then(function (position) {
+            vm.updateSunPosition(position)
+            setTimeout(() => {
+              vm.step = STEP_ALTITUDE
+            }, 1000)
+            setTimeout(() => {
+              vm.step = STEP_RESULTS
+            }, 1500)
+          }, function (error) {
+            console.log(error)
+          })
+        // })
+      // geolocation error
       }, function (error) {
         vm.step = STEP_NO_COORDS
         console.log(error)
-      })
-
-      .then(function (coords) {
-        vm.getSunPosition(coords.latitude, coords.longitude)
-        .then(function (position) {
-          vm.updateSunPosition(position)
-          setTimeout(() => {
-            vm.step = STEP_ALTITUDE
-          }, 1000)
-          setTimeout(() => {
-            vm.step = STEP_RESULTS
-          }, 1500)
-        }, function (error) {
-          console.log(error)
-        })
       })
     },
 
@@ -174,7 +174,7 @@ export default {
           }, function (error) {
               switch (error.code) {
                 case error.PERMISSION_DENIED:
-                  reject(Error('Permission denied'))
+                  reject(Error('Permission denied by user'))
                   break
                 case error.PERMISSION_UNAVAILABLE:
                   reject(Error('Permission unavailable'))
