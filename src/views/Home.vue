@@ -146,7 +146,7 @@ export default {
         return coords
       }, function (error) {
         vm.step = STEP_NO_COORDS
-        // console.log(error)
+        console.log(error)
       })
 
       .then(function (coords) {

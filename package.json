@@ -1,19 +1,15 @@
 {
   "name": "toobright",
-  "description": "Don't drive into the sun",
   "version": "0.1.0",
   "private": true,
+  "description": "Don't drive into the sun",
+  "author": "Claire Laville",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "start": "node server.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/clearthecity/toobright.git"
-  },
-  "author": "Claire Laville",
   "dependencies": {
     "bootstrap": "^4.3.1",
     "bootstrap-vue": "^2.0.0-rc.26",
@@ -40,6 +36,11 @@
     "babel-eslint": "^10.0.1",
     "eslint": "^5.16.0",
     "eslint-plugin-vue": "^5.0.0",
+    "vue-cli-plugin-pwa": "^1.0.0-alpha.1",
     "vue-template-compiler": "^2.6.10"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/clearthecity/toobright.git"
   }
 }

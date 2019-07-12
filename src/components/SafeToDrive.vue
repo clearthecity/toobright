@@ -113,6 +113,10 @@ export default {
         }
         // if night: time to sunrise tomorrow
         if (this.sunAltitude <= LOW_DANGER) {
+          // after midnight
+          if (moment().isBefore(moment().hour(9))) {
+            resolve(sunTimesToday.morningDangerBegin)
+          }
           resolve(sunTimesTomorrow.morningDangerBegin)
         }
         else {

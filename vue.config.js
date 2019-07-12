@@ -21,5 +21,17 @@ module.exports = {
         }
         return options
       })
+  },
+  pwa: {
+    themeColor: '#fffd70',
+    msTileColor: '#000',
+    appleMobileWebAppCapable: 'yes',
+    appleMobileWebAppStatusBarStyle: 'black',
+
+    iconPaths: {
+      appleTouchIcon: 'img/icons/apple-touch-icon.png',
+      msTileImage: 'img/icons/mstile-150x150.png'
+    },
+    workboxPluginMode: 'GenerateSW',
   }
 }
