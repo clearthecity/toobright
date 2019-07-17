@@ -20,7 +20,7 @@
 
 <script>
 
-const HIGH_DANGER = 9
+const HIGH_DANGER = 12
 const LOW_DANGER = 3
 
 export default {

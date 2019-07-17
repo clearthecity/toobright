@@ -1,6 +1,6 @@
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const MomentLocalesPlugin = require('moment-locales-webpack-plugin')
-const GenerateSW = require('workbox-webpack-plugin');
+// const WorkboxPlugin = require('workbox-webpack-plugin');
 
 module.exports = {
   module: {
@@ -16,7 +16,7 @@ module.exports = {
     new VueLoaderPlugin(),
     new MomentLocalesPlugin({
       localesToKeep: ['en-us']
-    }),
-    new GenerateSW()
+    }) //,
+    // new WorkboxPlugin.GenerateSW()
   ]
 }
