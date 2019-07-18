@@ -2,7 +2,7 @@
   <div class="about">
   <b-container>
     <div class='row' style='margin-top:2rem'><div class='col'>
-    <ImagePanel :photo_id='1'></ImagePanel>
+    <ImagePanel></ImagePanel>
     </div></div>
 
     <div style='max-width:24rem; margin: 0 auto'>

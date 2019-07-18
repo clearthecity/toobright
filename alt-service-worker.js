@@ -1,3 +1,4 @@
+/*
 workbox.setConfig({
   debug: true
 })
@@ -20,9 +21,9 @@ workbox.routing.registerRoute(
   }),
 )
 workbox.routing.registerRoute(
-  /\'about\.html$/,
-  new workbox.strategies.cacheFirst({
-    cacheName: 'about-cache',
+  /\.html$/,
+  new workbox.strategies.staleWhileRevalidate({
+    cacheName: 'html-cache',
     plugins: [
       new workbox.expiration.Plugin({
         maxAgeSeconds: 14 * 24 * 60 * 60, // 14 Days
@@ -32,20 +33,10 @@ workbox.routing.registerRoute(
 )
 
 workbox.routing.registerRoute(
-  'index.html',
-  new workbox.strategies.staleWhileRevalidate({
-    cacheName: 'index-cache',
-    plugins: [
-      new workbox.expiration.Plugin({
-        maxAgeSeconds: 7 * 24 * 60 * 60 // 7 days
-      })
-    ],
-  })
-)
-
-workbox.routing.registerRoute(
   /\.(?=js|css)$/,
   new workbox.strategies.staleWhileRevalidate({
     cacheName: 'js-css-cache'
   })
 )
+
+*/
