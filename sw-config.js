@@ -1,7 +1,9 @@
+/*
 module.exports = {
-  staticFileGlobs: [
+  globPatterns: [
     'index.html',
     'manifest.json',
     'dist/**.js'
   ]
 }
+*/
