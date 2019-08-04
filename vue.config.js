@@ -32,6 +32,6 @@ module.exports = {
       appleTouchIcon: 'img/icons/apple-touch-icon.png',
       msTileImage: 'img/icons/mstile-150x150.png'
     },
-    workboxPluginMode: 'GenerateSW',
+    workboxPluginMode: 'GenerateSW'
   }
 }

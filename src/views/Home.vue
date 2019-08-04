@@ -143,8 +143,6 @@ export default {
       .then(function (coords) {
         vm.updateUserCoords(coords)
         vm.step = STEP_COORDS
-        // return coords
-        // .then(function (coords) {
           vm.getSunPosition(coords.latitude, coords.longitude)
           .then(function (position) {
             vm.updateSunPosition(position)
@@ -157,7 +155,6 @@ export default {
           }, function (error) {
             console.log(error)
           })
-        // })
       // geolocation error
       }, function (error) {
         vm.step = STEP_NO_COORDS
