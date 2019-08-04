@@ -25,7 +25,7 @@ module.exports = {
   pwa: {
     themeColor: '#fffd70',
     msTileColor: '#000',
-    appleMobileWebAppCapable: 'yes',
+    mobileWebAppCapable: 'yes',
     appleMobileWebAppStatusBarStyle: 'black',
 
     iconPaths: {
