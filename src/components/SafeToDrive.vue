@@ -70,6 +70,7 @@ export default {
           .then(function (timeUntil) {
             return timeUntil
           }, function (error) {
+            /* eslint-disable no-console */
             console.log(error)
           })
           .then(function (timeUntil) {
@@ -81,6 +82,7 @@ export default {
           .then(function (timeUntil) {
             return timeUntil
           }, function (error) {
+            /* eslint-disable no-console */
             console.log(error)
           })
           .then(function (timeUntil) {
