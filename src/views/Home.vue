@@ -153,11 +153,13 @@ export default {
               vm.step = STEP_RESULTS
             }, 1500)
           }, function (error) {
+            /* eslint-disable no-console */
             console.log(error)
           })
       // geolocation error
       }, function (error) {
         vm.step = STEP_NO_COORDS
+        /* eslint-disable no-console */
         console.log(error)
       })
     },
